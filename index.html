@@ -1,0 +1,60 @@
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>MakeyMakey</title>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
+	<script type="text/javascript" src="js/jquery-2.1.4.js"></script>
+	<style>
+		body {
+			background-color: #17c0ad;
+			padding-top: 100px;
+		}
+		
+		h1 {
+			font-family: "Aileron", sans-serif;
+			width: 100%;
+			text-align: center;
+			color:White;
+			font-size: 60px;
+		}
+		 
+		img {
+			display: block;
+			margin: 0 auto;
+		}
+		
+		p, span {
+			font-family: "Aileron", sans-serif;
+			color:White;
+			font-size: 60px;
+			width: 100%;
+			text-align: center;
+			display: block;
+		}
+	</style>
+</head>
+<body>
+	<h1>Remplissage de la bouteille</h1>
+	<span id="taux_remp">0 %</span>
+	<img src="img/3.svg" alt="bouteille">
+	<script type="text/javascript">
+		$(document).ready(function($) {
+			$('body').keypress(function( event ) {
+				console.log(event.keyCode);
+				if(event.keyCode == 100){
+					$('#taux_remp').html('25 %');
+				} else if(event.keyCode == 115){
+					$('#taux_remp').html('50 %');
+				} else if(event.keyCode == 113){
+					$('#taux_remp').html('75 %');
+				} else if(event.keyCode == 122){
+					$('#taux_remp').html('100 %');
+				} else {
+					$('#taux_remp').html('0 %');
+				}
+ 				
+ 			});
+		});
+	</script>
+</body>
+</html>
