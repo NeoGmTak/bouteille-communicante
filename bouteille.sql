@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Client :  127.0.0.1
--- Généré le :  Lun 07 Mars 2016 à 13:14
+-- Généré le :  Lun 07 Mars 2016 à 16:53
 -- Version du serveur :  5.6.17
 -- Version de PHP :  5.5.12
 
@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS `hydratation` (
   `date_hydra` datetime NOT NULL,
   `pourcentage` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=15 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=21 ;
 
 --
 -- Contenu de la table `hydratation`
@@ -51,7 +51,13 @@ INSERT INTO `hydratation` (`id`, `date_hydra`, `pourcentage`) VALUES
 (11, '2016-03-07 10:23:23', 100),
 (12, '2016-03-07 10:48:05', 0),
 (13, '2016-03-07 11:02:22', 50),
-(14, '2016-03-07 11:06:22', 50);
+(14, '2016-03-07 11:06:22', 50),
+(15, '2016-03-07 14:46:51', 75),
+(16, '2016-03-07 14:46:54', 75),
+(17, '2016-03-07 14:47:24', 50),
+(18, '2016-03-07 16:06:20', 0),
+(19, '2016-03-07 16:07:47', 0),
+(20, '2016-03-07 16:52:21', 50);
 
 -- --------------------------------------------------------
 

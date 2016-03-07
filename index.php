@@ -116,7 +116,7 @@
 		}
 	</style>
 	<script type="text/javascript">
-		function difference(avant, apres){
+		function difference(avant, apres){ // fonction permettant de définir si la personne à bu
 	       	var dt=new Date();
 	       	window.status=dt.getHours()+":"+dt.getMinutes()+":"+dt.getSeconds();
 			var boire = false;
@@ -139,37 +139,71 @@
 				<strong>Prénom :</strong> Germaine <br>
 			 	<strong>Âge :</strong> 82 ans <br>
 			</p>
-			<a href="hydratation.php">La patient a bu</a>
+			<a href="hydratation.php">Le patient a bu</a>
 		</article>
 	</section>
 	<section id="droite">
 		<article>
 			<div id="popup" style="display: none;">
 				<img src="img/warning-01.svg" alt="warning">
-				<p>Germaine n’a pa bu depuis 2h, il est temp de lui rappelez de s’hydrater  !</p>
+				<audio id="son">
+					<source src="son/617.wav"></source>
+				</audio>
+				<p>Germaine n’a pas bu depuis 2h, il est temps de lui rappeler de s’hydrater !</p>
 			</div>
 			<div id="bouteille">
 				<img src="img/bouteillevide.svg" alt="Bouteille" id="img_bouteille">
 				<p>
-					La bouteille de Germaine DUPONT <br>est remplis à <br>
+					La bouteille de Germaine DUPONT <br>est remplie à <br>
 					<?php if(isset($_GET['pourcentage'])){ ?>
 					<strong id="taux_remp"><?php echo $_GET['pourcentage']; ?> %</strong><br>
-					<?php } else { ?>
-					<strong id="taux_remp">0 %</strong><br>
-					<?php } ?>
+					<?php } else { 
+						$req = $bdd->query('SELECT pourcentage FROM hydratation WHERE id = (SELECT MAX(id) FROM hydratation);') 
+					    or exit(print_r($req->errorInfo()));                     
+					    $req->execute(); 
+				   		while($res = $req -> fetch()) { ?>
+					<strong id="taux_remp"><?php echo $res['pourcentage']; ?> %</strong><br>
+					<?php }
+					 } ?>
 					La température est de<br>
-					<strong>32°C</strong><br>
+					<strong id="temperature"></strong><br>
 				</p>
 			</div>
 		</article>
 	</section>
 	<script type="text/javascript">
 		$(document).ready(function($) {
-			$('body').keypress(function( event ) {
+			var freq_hydra = 6000;
+			$.ajax({
+					type: "GET",
+					dataType: "json",
+					url: "http://api.openweathermap.org/data/2.5/forecast/city?id=6455250&units=metric&APPID=7eb36317f8f1ac3844f09c32acf70933", //on se connecte à l'API avec les paramètre permettant d'identifer la ville ici CHambéry et on défini en degré plutôt qu'en Kelvin
+					success: function(data){
+						var temp = data.list[0].main.temp; //On récupère la température 
+		                $('#temperature').text(temp+" °C");
+		                switch(temp) {
+						    case temp > 20 && temp <= 25:
+						        freq_hydra = 4000;	// 2 secondes mais en réalité 2 h 
+						        break;
+						    case temp > 25 && temp <= 30:
+						       	freq_hydra = 3000; // 1.5 secondes mais en réalité 1 h 30 
+						        break;
+						    case temp > 30:
+						       	freq_hydra = 2000; // 1 secondes mais en réalité 1 h 
+						        break;
+						    default:
+						        freq_hydra = 6000;
+						}
+					}, 
+	              	error: function(){
+	              		console.log('Impossible de se connecter à la météo !');
+	              	}
+				});
+			$('body').keypress(function( event ) { //Fonctionnement du Makey avec les différentes touches qui sont liées à des événements 
 				if(event.keyCode == 100){
 					$('#taux_remp').html('25 %');
 					$('#img_bouteille').attr('src', 'img/bouteille25.svg');
-					var pourcentage = 25;
+					var pourcentage = 25; 
 					$("a").attr("href", "hydratation.php?pourcentage="+pourcentage);
 				} else if(event.keyCode == 115){
 					$('#taux_remp').html('50 %');
@@ -216,11 +250,11 @@
 			$("a").attr("href", "hydratation.php?pourcentage="+pourcentage);
 	
 			<?php 
-			$req = $bdd->query('SELECT pourcentage FROM hydratation WHERE id = (SELECT MAX(id) FROM hydratation);')
+			$req = $bdd->query('SELECT pourcentage FROM hydratation WHERE id = (SELECT MAX(id) FROM hydratation);') // on récupère la valeur en pourcentage de ce qu'il restait dans la bouteille à la dernière hydratation
 		    or exit(print_r($req->errorInfo()));                     
 		    $req->execute(); ?>
 		    
-   			setInterval(function(){ 
+   			setInterval(function(){
    				pourcentage = $('#taux_remp').text();	// On récupère le pourcentage
 				var pourcentage = parseInt(pourcentage.replace(/\D+/g,''));
 				console.log(pourcentage);
@@ -229,10 +263,12 @@
    				<?php } ?>
    				if(diff == true){
    					$('#popup').show();
+   					$('#son')[0].play();
    				} else {
    					$('#popup').hide();
+   					$('#son')[0].stop();
    				}
-   			}, 5000); //Test toutes les 5 secondes
+   			}, freq_hydra); //Test toutes les 5 secondes
    			
 
 			
